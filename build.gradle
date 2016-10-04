@@ -1,0 +1,60 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+apply plugin: 'war'
+
+jar {
+    baseName = 'mijin-demo-backend'
+    version =  '0.1.0'
+}
+
+war {
+    baseName = 'mijin-demo-backend'
+    version = '0.1.0'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-snapshot" }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-log4j2")
+    compile("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+    compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude group:'org.springframework.boot', module:'spring-boot-starter-logging'
+    }
+
+    compile files('libs/nem-core-0.6.77-BETA.jar')
+    compile("net.minidev:json-smart:1.2")
+
+    runtime("org.apache.commons:commons-lang3:3.3.2")
+    runtime("com.googlecode.javaewah:JavaEWAH:1.0.0")
+    runtime("org.bouncycastle:bcprov-jdk15on:1.50")
+    runtime("commons-codec:commons-codec:1.9")
+    runtime("org.apache.commons:commons-math3:3.2")
+    runtime("org.apache.httpcomponents:httpasyncclient:4.1.1")
+    runtime("commons-io:commons-io:2.4")
+    runtime("commons-cli:commons-cli:1.2")
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('com.jayway.jsonpath:json-path')
+
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
+}

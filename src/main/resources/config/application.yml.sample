@@ -1,0 +1,22 @@
+mijin:
+  serverNodeIp: 59.106.209.120 # public beta test environment, http://mijin.io/ja/mijin-cloud-chain-beta-test
+  serverNodePort: 7895
+  serverNodeProtocol: http
+  existAccountPrivateKeys:
+    - [primary test account, 10000 XEM balance is preferred]
+    - 00c6bfae479e7da177eb46f7f4c48810ad266946d9e9e6b162626daa0a16107245
+    - [add your test account private keys from here]
+  connectionTimeout: 4000
+  socketTimeout: 10000
+  requestTimeout: 30000
+
+jdbc: # not in use
+  url:
+  username:
+  password:
+  database:
+
+app: # not in use
+  adminName: admin
+  adminPass: admin
+  enableDebug: true

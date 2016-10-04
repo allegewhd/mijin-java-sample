@@ -1,0 +1,35 @@
+Configuration:
+  status: "warn"
+  Appenders:
+    Console:
+      name: "console"
+      PatternLayout:
+        pattern: "[%d{yyyy-MM-dd HH:mm:ss.SSS}], %-5p, %t, %c, %m%n"
+    RollingFile:
+      name: "file"
+      fileName: "logs/app.log"
+      filePattern: "logs/%d{yyyy-MM-dd}_app.log.gz"
+      PatternLayout:
+        pattern: "%date{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%15thread] %class#%method@%4line : %message %n"
+      Policies:
+        TimeBasedTriggeringPolicy:
+          interval: 1
+          modulate: true
+  Loggers:
+    Logger:
+      - name: "org.springframework"
+        level: "warn"
+        additivity: "false"
+        AppenderRef:
+          - ref: "console"
+          - ref: "file"
+      - name: "io.sjitech"
+        level: "debug"
+        additivity: "false"
+        AppenderRef:
+          - ref: "console"
+          - ref: "file"
+    Root:
+      level: "info"
+      AppenderRef:
+        - ref: "console"
