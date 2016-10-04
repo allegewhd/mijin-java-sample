@@ -10,6 +10,8 @@ So I write this project to demo how to develop a REST mijin application with [Sp
 
 Until now(2016/08) mijin is not released yet, I use the [public beta test environment supplied by sakura internet](http://mijin.io/ja/mijin-cloud-chain-beta-test).
 
+There's a Japanese slide for introducing Mijin development, check it [here](https://github.com/sjitech/mijin-dev-slide).
+
 ### Status ###
 
 * Under development
