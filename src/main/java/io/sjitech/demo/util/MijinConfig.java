@@ -26,6 +26,14 @@ public class MijinConfig {
 
     private List<String> existAccountPrivateKeys;
 
+    /**
+     * https://blog.nem.io/nem-updated-0-6-82/
+     * The new fee structure will take effect at block height 875000, which is roughly at the end of November.
+     *
+     * when on private environment, use new fee from start, so this height will be 1.
+     */
+    private long newFeeApplyForkHeight;
+
     public String getServerNodeProtocol() {
         return serverNodeProtocol;
     }
@@ -81,4 +89,14 @@ public class MijinConfig {
     public void setServerNodePort(int serverNodePort) {
         this.serverNodePort = serverNodePort;
     }
+
+
+    public long getNewFeeApplyForkHeight() {
+        return newFeeApplyForkHeight;
+    }
+
+    public void setNewFeeApplyForkHeight(long newFeeApplyForkHeight) {
+        this.newFeeApplyForkHeight = newFeeApplyForkHeight;
+    }
+
 }

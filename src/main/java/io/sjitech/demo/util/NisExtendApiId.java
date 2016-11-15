@@ -32,6 +32,20 @@ public enum NisExtendApiId implements ApiId {
     NIS_REST_NAMESPACE("/namespace"),
 
     /**
+     * https://blog.nem.io/nem-updated-0-6-82/
+     *
+     * There is a new API request /transaction/get to look up a transaction by hash.
+     * Example: http://bigalice3.nem.ninja:7890/transaction/get?hash=215b900475b13f724acc9fbe249bb9ffd31451c2352ed51b9637143cde4c260a
+     * To fully support hash based transaction lookup, a node must set the entry in the NIS config.properties
+     * (config-user.properties) nis.transactionHashRetentionTime to -1.
+     *
+     * This means all transaction hashes in the blockchain are held in memory and
+     * therefore is only recommended for nodes with at least 2GB memory.
+     *
+     */
+    NIS_REST_GET_TRANSACTION_BY_HASH("transaction/get"),
+
+    /**
      * The account/generate API
      */
     NIS_REST_ACCOUNT_GENERATE("/account/generate");

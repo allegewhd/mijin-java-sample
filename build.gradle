@@ -1,25 +1,34 @@
 buildscript {
+    ext {
+        springbootVersion = "1.4.2.RELEASE"
+        appName           = "mijin-java-sample"
+        appVersion        = "1.0.1"
+
+        mijinVersion      = "0.6.82-BETA"
+        mijinJarFile      = "libs/nem-core-${mijinVersion}.jar"
+    }
+
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springbootVersion}")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'war'
 
 jar {
-    baseName = 'mijin-demo-backend'
-    version =  '0.1.0'
+    baseName = appName
+    version  = appVersion
 }
 
 war {
-    baseName = 'mijin-demo-backend'
-    version = '0.1.0'
+    baseName = appName
+    version  = appVersion
 }
 
 repositories {
@@ -37,7 +46,7 @@ dependencies {
         exclude group:'org.springframework.boot', module:'spring-boot-starter-logging'
     }
 
-    compile files('libs/nem-core-0.6.77-BETA.jar')
+    compile files(mijinJarFile)
     compile("net.minidev:json-smart:1.2")
 
     runtime("org.apache.commons:commons-lang3:3.3.2")

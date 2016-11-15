@@ -14,6 +14,13 @@ There's a Japanese slide for introducing Mijin development, check it [here](http
 
 ### Status ###
 
+* 2016-11-15
+    + upgrade spring boot to 1.4.2.RELEASE
+    + update for nem.core 0.6.82-beta, [https://blog.nem.io/nem-updated-0-6-82/](https://blog.nem.io/nem-updated-0-6-82/)
+    + update mosaic fee calculation for new fee caculator API. On private environment, assume new fee will be applied from block start
+    + add new transaction get API endpoint in API enum
+    + refined build.gradle
+
 * Under development
     + No UI, use `curl` to send http request
     + RDB access function is omitted

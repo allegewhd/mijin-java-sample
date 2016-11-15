@@ -55,7 +55,7 @@ public class MosaicService {
 
 
     private MijinNamespace getNamespaceData(String namespaceFullName) {
-        final CompletableFuture<Deserializer> future =  mijinUtil.getConnector().getAsync(
+        final CompletableFuture<Deserializer> future = mijinUtil.getConnector().getAsync(
                 mijinUtil.getMijinNodeEndpoint(),
                 NisExtendApiId.NIS_REST_NAMESPACE,
                 "namespace=" + namespaceFullName
@@ -95,7 +95,7 @@ public class MosaicService {
     }
 
     private MijinMosaic getMosaicDefinition(String namespaceId, String mosaicId) {
-        final CompletableFuture<Deserializer> future =  mijinUtil.getConnector().getAsync(
+        final CompletableFuture<Deserializer> future = mijinUtil.getConnector().getAsync(
                 mijinUtil.getMijinNodeEndpoint(),
                 NisExtendApiId.NIS_REST_MOSAIC_DEFINITION_PAGE,
                 "namespace=" + namespaceId
@@ -114,32 +114,32 @@ public class MosaicService {
                         .filter(pair -> mosaicId.equals(pair.getEntity().getId().getName()))
                         .forEach(pair -> {
 
-                    log.info("--------------------------------------------------------------------------------");
+                            log.info("--------------------------------------------------------------------------------");
 
-                    mosaic.setNamespaceId(namespaceId);
-                    mosaic.setName(mosaicId);
-                    mosaic.setCreator(pair.getEntity().getCreator().getAddress().toString());
-                    mosaic.setId(pair.getMetaData().getId());
-                    mosaic.setDescription(CommonUtil.urlDecode(pair.getEntity().getDescriptor().toString()));
-                    mosaic.setDivisibility(pair.getEntity().getProperties().getDivisibility());
-                    mosaic.setInitialSupply(pair.getEntity().getProperties().getInitialSupply());
-                    mosaic.setSupplyMutable(pair.getEntity().getProperties().isSupplyMutable());
-                    mosaic.setTransferable(pair.getEntity().getProperties().isTransferable());
-                    mosaic.setHasLevy(pair.getEntity().isMosaicLevyPresent());
-                    if (pair.getEntity().isMosaicLevyPresent()) {
-                        mosaic.setLevyType(pair.getEntity().getMosaicLevy().getType());
-                        mosaic.setRecipientAddress(pair.getEntity().getMosaicLevy().getRecipient().getAddress().toString());
-                        mosaic.setLevyFee(pair.getEntity().getMosaicLevy().getFee().getRaw());
-                    }
+                            mosaic.setNamespaceId(namespaceId);
+                            mosaic.setName(mosaicId);
+                            mosaic.setCreator(pair.getEntity().getCreator().getAddress().toString());
+                            mosaic.setId(pair.getMetaData().getId());
+                            mosaic.setDescription(CommonUtil.urlDecode(pair.getEntity().getDescriptor().toString()));
+                            mosaic.setDivisibility(pair.getEntity().getProperties().getDivisibility());
+                            mosaic.setInitialSupply(pair.getEntity().getProperties().getInitialSupply());
+                            mosaic.setSupplyMutable(pair.getEntity().getProperties().isSupplyMutable());
+                            mosaic.setTransferable(pair.getEntity().getProperties().isTransferable());
+                            mosaic.setHasLevy(pair.getEntity().isMosaicLevyPresent());
+                            if (pair.getEntity().isMosaicLevyPresent()) {
+                                mosaic.setLevyType(pair.getEntity().getMosaicLevy().getType());
+                                mosaic.setRecipientAddress(pair.getEntity().getMosaicLevy().getRecipient().getAddress().toString());
+                                mosaic.setLevyFee(pair.getEntity().getMosaicLevy().getFee().getRaw());
+                            }
 
-                    log.info(String.format("\n{\n\t\"namespace\":\"%s\",\n\t\"mosaic\":\"%s\",\n\t\"initial supply\":%d,\n\t\"divisibility\":%d\n}\n",
-                            mosaic.getNamespaceId(),
-                            mosaic.getName(),
-                            mosaic.getInitialSupply(),
-                            mosaic.getDivisibility()
-                    ));
+                            log.info(String.format("\n{\n\t\"namespace\":\"%s\",\n\t\"mosaic\":\"%s\",\n\t\"initial supply\":%d,\n\t\"divisibility\":%d\n}\n",
+                                    mosaic.getNamespaceId(),
+                                    mosaic.getName(),
+                                    mosaic.getInitialSupply(),
+                                    mosaic.getDivisibility()
+                            ));
 
-                });
+                        });
             }
 
             if (mosaic.getCreator() == null) {
@@ -194,22 +194,24 @@ public class MosaicService {
                     attachment);                            // attachment (message, mosaics)
 
 
+            TransactionFeeCalculator calculator = new DefaultTransactionFeeCalculator(
+                    id -> {
+                        for (MosaicParameter mosaicData : parameter.getMosaics()) {
+                            MosaicId mosaicId = new MosaicId(new NamespaceId(mosaicData.getNamespace()), mosaicData.getMosaic());
 
-            TransactionFeeCalculator calculator = new DefaultTransactionFeeCalculator(id -> {
-                for (MosaicParameter mosaicData : parameter.getMosaics()) {
-                    MosaicId mosaicId = new MosaicId(new NamespaceId(mosaicData.getNamespace()), mosaicData.getMosaic());
+                            if (id.equals(mosaicId)) {
+                                MosaicDefinition mosaicDefinition = retrieveMosaicDefinition(mosaicId);
 
-                    if (id.equals(mosaicId)) {
-                        MosaicDefinition mosaicDefinition = retrieveMosaicDefinition(mosaicId);
+                                return new MosaicFeeInformation(
+                                        Supply.fromValue(mosaicDefinition.getProperties().getInitialSupply()),
+                                        mosaicDefinition.getProperties().getDivisibility());
+                            }
+                        }
 
-                        return new MosaicFeeInformation(
-                                Supply.fromValue(mosaicDefinition.getProperties().getInitialSupply()),
-                                mosaicDefinition.getProperties().getDivisibility());
-                    }
-                }
-
-                return null;
-            });
+                        return null;
+                    },
+                    () -> mijinUtil.getNewFeeApplyForkHeight(),
+                    mijinUtil.getNewFeeApplyForkHeight());
 
             transaction.setFee(calculator.calculateMinimumFee(transaction));
 
@@ -297,7 +299,10 @@ public class MosaicService {
 
         final MosaicFeeInformation feeInfo =
                 new MosaicFeeInformation(Supply.fromValue(mosaicDef.getInitialSupply()), mosaicDef.getDivisibility());
-        TransactionFeeCalculator calculator = new DefaultTransactionFeeCalculator(id -> feeInfo);
+        TransactionFeeCalculator calculator = new DefaultTransactionFeeCalculator(
+                id -> feeInfo,
+                () -> mijinUtil.getNewFeeApplyForkHeight(),
+                mijinUtil.getNewFeeApplyForkHeight());
         transaction.setFee(calculator.calculateMinimumFee(transaction));
 
         transaction.setDeadline(timeInstant.addHours(23));
@@ -539,7 +544,7 @@ public class MosaicService {
                 // from the mosaic sender to the recipient (here the creator)
         );
 
-        return new MosaicDefinition(creator,mosaicId,descriptor, mosaicProperties, null);
+        return new MosaicDefinition(creator, mosaicId, descriptor, mosaicProperties, null);
     }
 
     public MosaicIdSupplyPair retrieveMosaicSupply(final MosaicId id) {
@@ -622,7 +627,7 @@ public class MosaicService {
 
             // no levy
             final MosaicDefinition mosaicDefinition =
-                    new MosaicDefinition(sender, mosaicId,descriptor, mosaicProperties, null);
+                    new MosaicDefinition(sender, mosaicId, descriptor, mosaicProperties, null);
 
             // prepare transaction data and sign it
             final TimeInstant timeInstant = mijinUtil.getTimeProvider().getCurrentTime();

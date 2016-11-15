@@ -13,6 +13,7 @@ import org.nem.core.model.Account;
 import org.nem.core.model.NetworkInfos;
 import org.nem.core.model.Transaction;
 import org.nem.core.model.ncc.RequestAnnounce;
+import org.nem.core.model.primitive.BlockHeight;
 import org.nem.core.node.ApiId;
 import org.nem.core.node.NodeEndpoint;
 import org.nem.core.serialization.BinarySerializer;
@@ -50,6 +51,8 @@ public class MijinUtil implements ApplicationListener<ApplicationReadyEvent> {
 
     protected DefaultAsyncNemConnector<ApiId> connector;
 
+    protected BlockHeight newFeeApplyFromBlockHeight;
+
     @Autowired
     private MijinConfig config;
 
@@ -74,6 +77,14 @@ public class MijinUtil implements ApplicationListener<ApplicationReadyEvent> {
 
         connector = new DefaultAsyncNemConnector<>(client, r -> { throw new RuntimeException(); });
         connector.setAccountLookup(Account::new);
+    }
+
+    public BlockHeight getNewFeeApplyForkHeight() {
+        if (newFeeApplyFromBlockHeight == null) {
+            newFeeApplyFromBlockHeight = new BlockHeight(config.getNewFeeApplyForkHeight());
+        }
+
+        return newFeeApplyFromBlockHeight;
     }
 
     public TimeProvider getTimeProvider() {
