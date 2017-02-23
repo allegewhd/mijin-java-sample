@@ -1,8 +1,8 @@
 buildscript {
     ext {
-        springbootVersion = "1.4.2.RELEASE"
+        springbootVersion = "1.5.1.RELEASE"
         appName           = "mijin-java-sample"
-        appVersion        = "1.0.1"
+        appVersion        = "1.0.2"
 
         mijinVersion      = "0.6.82-BETA"
         mijinJarFile      = "libs/nem-core-${mijinVersion}.jar"
@@ -39,12 +39,14 @@ repositories {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+configurations {
+    all*.exclude group:'org.springframework.boot', module:'spring-boot-starter-logging'
+}
+
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-log4j2")
     compile("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
-    compile("org.springframework.boot:spring-boot-starter-web") {
-        exclude group:'org.springframework.boot', module:'spring-boot-starter-logging'
-    }
+    compile("org.springframework.boot:spring-boot-starter-web")
 
     compile files(mijinJarFile)
     compile("net.minidev:json-smart:1.2")
@@ -65,5 +67,5 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.1'
+    gradleVersion = '3.4'
 }

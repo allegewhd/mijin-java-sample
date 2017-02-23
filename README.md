@@ -14,6 +14,12 @@ There's a Japanese slide for introducing Mijin development, check it [here](http
 
 ### Status ###
 
+* 2017-2-23
+    + upgrade spring boot to 1.5.1.RELEASE
+    + upgrade gradle to 3.4
+    + uadd mijin core jar file nem-core-0.6.81-BETA.jar
+    + log detail error message from mijin when connection failed (MijinUtil)
+
 * 2016-11-15
     + upgrade spring boot to 1.4.2.RELEASE
     + update for nem.core 0.6.82-beta, [https://blog.nem.io/nem-updated-0-6-82/](https://blog.nem.io/nem-updated-0-6-82/)

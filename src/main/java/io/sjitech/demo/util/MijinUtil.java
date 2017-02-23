@@ -2,6 +2,7 @@ package io.sjitech.demo.util;
 
 import io.sjitech.demo.model.MijinResult;
 import io.sjitech.demo.model.TransactionResult;
+import io.sjitech.demo.exception.MijinException;
 import org.nem.core.connect.ErrorResponseDeserializerUnion;
 import org.nem.core.connect.HttpJsonPostRequest;
 import org.nem.core.connect.HttpMethodClient;
@@ -26,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PreDestroy;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -75,7 +78,12 @@ public class MijinUtil implements ApplicationListener<ApplicationReadyEvent> {
                config.getSocketTimeout(), config.getRequestTimeout());
 
 
-        connector = new DefaultAsyncNemConnector<>(client, r -> { throw new RuntimeException(); });
+        connector = new DefaultAsyncNemConnector<>(client, r -> {
+            log.error("mijin error status: {} error: {} message: {}",
+                    r.getStatus(), r.getError(), r.getMessage());
+
+            throw new MijinException(r.getMessage());
+        });
         connector.setAccountLookup(Account::new);
     }
 
@@ -155,5 +163,16 @@ public class MijinUtil implements ApplicationListener<ApplicationReadyEvent> {
         }).join();
 
         return result.getRaw();
+    }
+
+    /**
+     * アプリケーション停止のhook処理を実装する
+     */
+    @PreDestroy
+    public void destroy() {
+        log.info("start shutdown application ... ");
+
+        log.debug("close HttpMethodClient .");
+        client.close();
     }
 }
